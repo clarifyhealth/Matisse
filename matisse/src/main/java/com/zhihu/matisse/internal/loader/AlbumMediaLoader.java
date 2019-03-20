@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
+import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.internal.entity.Album;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
@@ -133,6 +134,16 @@ public class AlbumMediaLoader extends CursorLoader {
             }
             enableCapture = false;
         }
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+ MimeType.BMP.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.WEBP.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.MPEG.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.QUICKTIME.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.THREEGPP.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.THREEGPP2.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.MKV.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.WEBM.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.TS.toString()+"'";
+        selection = selection + " AND " + MediaStore.MediaColumns.MIME_TYPE + "!='"+MimeType.AVI.toString()+"'";
         return new AlbumMediaLoader(context, selection, selectionArgs, enableCapture);
     }
 

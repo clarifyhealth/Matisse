@@ -45,6 +45,7 @@ public class MediaStoreCompat {
     private       CaptureStrategy         mCaptureStrategy;
     private       Uri                     mCurrentPhotoUri;
     private       String                  mCurrentPhotoPath;
+    private       boolean                 isPhotos;
 
     public MediaStoreCompat(Activity activity) {
         mContext = new WeakReference<>(activity);
@@ -69,6 +70,17 @@ public class MediaStoreCompat {
 
     public void setCaptureStrategy(CaptureStrategy strategy) {
         mCaptureStrategy = strategy;
+    }
+
+    public void dispatchTakeVideoIntent(Context context,int requestCode) {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(context.getPackageManager()) != null) {
+            if (mFragment != null) {
+                mFragment.get().startActivityForResult(takeVideoIntent, requestCode);
+            } else {
+                mContext.get().startActivityForResult(takeVideoIntent, requestCode);
+            }
+        }
     }
 
     public void dispatchCaptureIntent(Context context, int requestCode) {
@@ -133,6 +145,14 @@ public class MediaStoreCompat {
         }
 
         return tempFile;
+    }
+
+    public void setIsPhotos(boolean isPhotos){
+        this.isPhotos = isPhotos;
+    }
+
+    public boolean IsPhotos(){
+        return isPhotos;
     }
 
     public Uri getCurrentPhotoUri() {

@@ -16,6 +16,8 @@
 package com.zhihu.matisse.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -26,14 +28,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DebugUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -221,8 +227,15 @@ public class MatisseActivity extends AppCompatActivity implements
             }
         } else if (requestCode == REQUEST_CODE_CAPTURE) {
             // Just pass the data back to previous calling Activity.
-            Uri contentUri = mMediaStoreCompat.getCurrentPhotoUri();
-            String path = mMediaStoreCompat.getCurrentPhotoPath();
+            Uri contentUri;
+            String path;
+            if(mMediaStoreCompat.IsPhotos()){
+                contentUri = mMediaStoreCompat.getCurrentPhotoUri();
+                path = mMediaStoreCompat.getCurrentPhotoPath();
+            }else{
+                contentUri = data.getData();
+                path = contentUri == null ? null : getRealPathFromURI(contentUri);
+            }
             ArrayList<Uri> selected = new ArrayList<>();
             selected.add(contentUri);
             ArrayList<String> selectedPath = new ArrayList<>();
@@ -237,6 +250,21 @@ public class MatisseActivity extends AppCompatActivity implements
             finish();
         }
     }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String filePath;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            filePath = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            filePath = cursor.getString(idx);
+            cursor.close();
+        }
+        return filePath;
+    }
+
 
     private void updateBottomToolbar() {
 
@@ -418,11 +446,48 @@ public class MatisseActivity extends AppCompatActivity implements
         return mSelectedCollection;
     }
 
+    public void showVideoAndPhotosSelect() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MatisseActivity.this);
+        builderSingle.setTitle("Capture Image or Video");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MatisseActivity.this, android.R.layout.select_dialog_singlechoice);
+        arrayAdapter.add("Take photos");
+        arrayAdapter.add("Record videos");
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String strName = arrayAdapter.getItem(which);
+                if (which == 1) {
+                    // record video
+                    if (mMediaStoreCompat != null) {
+                        mMediaStoreCompat.setIsPhotos(false);
+//                        mMediaStoreCompat.dispatchCaptureIntent(MatisseActivity.this, REQUEST_CODE_CAPTURE);
+                        mMediaStoreCompat.dispatchTakeVideoIntent(MatisseActivity.this, REQUEST_CODE_CAPTURE);
+                    }
+                } else {
+                    // take photos
+                    if (mMediaStoreCompat != null) {
+                        mMediaStoreCompat.setIsPhotos(true);
+                        mMediaStoreCompat.dispatchCaptureIntent(MatisseActivity.this, REQUEST_CODE_CAPTURE);
+                    }
+                }
+
+            }
+        });
+        builderSingle.show();
+    }
+
     @Override
     public void capture() {
-        if (mMediaStoreCompat != null) {
-            mMediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
-        }
+        showVideoAndPhotosSelect();
     }
 
 }
