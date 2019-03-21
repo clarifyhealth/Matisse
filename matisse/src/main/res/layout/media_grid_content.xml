@@ -37,6 +37,15 @@
         android:src="@drawable/ic_gif"
         android:visibility="gone"/>
 
+    <ImageView
+        android:id="@+id/play_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/play_video"
+        android:visibility="gone"
+        />
+
     <TextView
         android:id="@+id/video_duration"
         android:layout_width="wrap_content"
