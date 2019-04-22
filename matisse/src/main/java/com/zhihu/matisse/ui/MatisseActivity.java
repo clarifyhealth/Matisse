@@ -43,6 +43,8 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Album;
 import com.zhihu.matisse.internal.entity.Item;
@@ -77,9 +79,9 @@ public class MatisseActivity extends AppCompatActivity implements
     public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";
     public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
+    public static final String CHECK_STATE = "checkState";
     private static final int REQUEST_CODE_PREVIEW = 23;
     private static final int REQUEST_CODE_CAPTURE = 24;
-    public static final String CHECK_STATE = "checkState";
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private MediaStoreCompat mMediaStoreCompat;
     private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
@@ -108,6 +110,14 @@ public class MatisseActivity extends AppCompatActivity implements
             return;
         }
         setContentView(R.layout.activity_matisse);
+
+        Iconify.with(new FontAwesomeModule());
+
+        TextView recordVideo = findViewById(R.id.record_video);
+        TextView takePhoto = findViewById(R.id.take_photo);
+        Iconify.addIcons(recordVideo,takePhoto);
+        recordVideo.setOnClickListener(this);
+        takePhoto.setOnClickListener(this);
 
         if (mSpec.needOrientationRestriction()) {
             setRequestedOrientation(mSpec.orientation);
@@ -360,6 +370,16 @@ public class MatisseActivity extends AppCompatActivity implements
             if (mSpec.onCheckedListener != null) {
                 mSpec.onCheckedListener.onCheck(mOriginalEnable);
             }
+        }else if (v.getId() == R.id.record_video){
+                    if (mMediaStoreCompat != null) {
+                           mMediaStoreCompat.setIsPhotos(false);
+                            mMediaStoreCompat.dispatchTakeVideoIntent(MatisseActivity.this, REQUEST_CODE_CAPTURE);
+                        }
+         }else if (v.getId() == R.id.take_photo) {
+            if (mMediaStoreCompat != null) {
+                mMediaStoreCompat.setIsPhotos(true);
+                mMediaStoreCompat.dispatchCaptureIntent(MatisseActivity.this, REQUEST_CODE_CAPTURE);
+            }
         }
     }
 
@@ -487,7 +507,11 @@ public class MatisseActivity extends AppCompatActivity implements
 
     @Override
     public void capture() {
-        showVideoAndPhotosSelect();
+        //        showVideoAndPhotosSelect();
+                        if (mMediaStoreCompat != null) {
+                        mMediaStoreCompat.setIsPhotos(true);
+                        mMediaStoreCompat.dispatchCaptureIntent(MatisseActivity.this, REQUEST_CODE_CAPTURE);
+                    }
     }
 
 }

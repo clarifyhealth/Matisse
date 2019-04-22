@@ -39,6 +39,37 @@
             android:gravity="center"
             android:textColor="?attr/album.element.color"
             android:textSize="20sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:textColor="?attr/album.element.color"
+            android:textSize="20sp"
+            android:gravity="center"
+            />
+        <TextView
+            android:id="@+id/record_video"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:textColor="?attr/album.element.color"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="{fa-video-camera}"
+
+            />
+
+        <TextView
+            android:id="@+id/take_photo"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:textColor="?attr/album.element.color"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="{fa-camera-retro}"
+            />
+
+
     </android.support.v7.widget.Toolbar>
 
     <FrameLayout
